@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<title>Renta fija y acciones</title>
+<style>
+:root{--bg:#000;--card:#0d0d0f;--tx:#f4f4f5;--mut:#8a8a93;--bd:#1f1f24;--ac:#8b7cff;--pb:#fff;--pt:#000;--ok:#00e08a;--okbg:#04281c;--no:#ff4d6a;--nobg:#2a0a12;--wr:#ffb020;--wrbg:#2a1d04;--sky:#38bdf8;--teal:#2dd4bf;color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.4}
+main{max-width:920px;margin:0 auto;padding:20px 16px 40px}
+.banner{background:radial-gradient(circle at 90% -20%,rgba(0,224,138,.28),transparent 55%),radial-gradient(circle at 0% 120%,rgba(139,124,255,.22),transparent 55%),#0a0a0c;border:1px solid var(--bd);border-radius:16px;padding:20px 18px 16px;margin-bottom:14px}
+.banner h1{margin:0 0 4px;font-size:1.5rem}.banner p{margin:0;color:var(--mut)}.g{color:var(--ok)}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:16px;margin-bottom:16px}
+h2{font-size:1rem;margin:0 0 10px}h3{font-size:.8rem;margin:16px 0 8px;color:var(--mut);font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+.hint{font-size:.8rem;color:var(--mut);margin:8px 0 0}
+.fx{font-size:.82rem;color:var(--mut);margin:10px 0 0}.fx b{color:var(--tx)}
+input,select,textarea{padding:8px 9px;border:1px solid var(--bd);border-radius:8px;background:#000;color:var(--tx);font-size:.92rem;width:100%;font-family:inherit}
+textarea{min-height:90px;resize:vertical}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--ac)}
+input[readonly]{opacity:.7}
+label{display:block;font-size:.78rem;color:var(--mut);margin-bottom:3px}
+label button{padding:0 6px;margin-left:6px;font-size:.72rem;border-radius:6px;color:var(--ac);border-color:var(--ac);background:none;display:inline}
+button{padding:9px 14px;border-radius:8px;border:1px solid var(--bd);background:var(--card);color:var(--tx);cursor:pointer;font-size:.88rem}
+button.p{background:var(--pb);border-color:var(--pb);color:var(--pt);font-weight:700}
+.tabs{display:flex;gap:6px;margin-bottom:12px}.tabs button{flex:1;padding:10px 2px}
+.tabs.sub button{font-size:.78rem;padding:9px 2px}
+.tabs button.on,.seg button.on{background:var(--pb);color:var(--pt);border-color:var(--pb);font-weight:700}
+.seg{display:flex;gap:6px;margin:12px 0}.seg button{flex:1;padding:9px 6px;font-size:.82rem}.seg.wrap{flex-wrap:wrap}.seg.wrap button{flex:1 1 30%}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.sc{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.84rem}
+th,td{padding:6px 5px;border-bottom:1px solid var(--bd);text-align:right;font-variant-numeric:tabular-nums;vertical-align:middle;white-space:nowrap}
+th{color:var(--mut);font-weight:600;font-size:.76rem}th:first-child,td:first-child{text-align:left}
+table.pt td input{min-width:62px;padding:6px 5px;text-align:right}table.pt td:first-child input{min-width:96px;text-align:left}
+.x{padding:4px 9px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:12px;margin-bottom:16px}
+.kpi{background:var(--card);border:1px solid var(--bd);border-top:2px solid var(--ac);border-radius:16px;padding:13px}
+.kpi span{color:var(--mut);font-size:.78rem}.kpi b{display:block;font-size:1.2rem;margin-top:2px;letter-spacing:-.02em;font-variant-numeric:tabular-nums}.kpi small{display:block;font-size:.74rem;color:var(--mut);margin-top:1px}
+.mini{display:grid;grid-template-columns:repeat(auto-fit,minmax(105px,1fr));gap:10px;margin-top:12px}
+.mini div{background:#0a0a0c;border:1px solid var(--bd);border-radius:12px;padding:10px;text-align:center}.mini span{display:block;font-size:.72rem;color:var(--mut)}.mini b{font-size:1rem;font-variant-numeric:tabular-nums}
+.up{color:var(--ok)}.dn{color:var(--no)}.am{color:var(--wr)}
+.verdict{border-radius:16px;padding:15px;text-align:center;font-weight:700;font-size:1.2rem;margin-bottom:16px;border:1px solid currentColor;box-shadow:0 0 32px -12px currentColor}
+.verdict small{display:block;font-weight:400;font-size:.86rem;margin-top:4px;color:var(--tx)}
+.v-ok{color:var(--ok);background:var(--okbg)}.v-no{color:var(--no);background:var(--nobg)}.v-mid{color:var(--wr);background:var(--wrbg)}.v-neu{color:var(--mut);background:#141418}
+.leg{display:flex;gap:12px;flex-wrap:wrap;font-size:.78rem;color:var(--mut);margin-bottom:8px}.leg i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px}
+.cbl{display:flex;justify-content:space-between;gap:8px;font-size:.85rem;color:var(--mut)}.cbl b{color:var(--tx)}
+.cbb{height:10px;background:var(--bd);border-radius:6px;overflow:hidden;margin:4px 0 12px}.cbb i{display:block;height:100%;border-radius:6px}
+svg text{fill:var(--mut);font-size:11px}
+</style>
+</head>
+<body>
+<main>
+<div class="banner"><h1>Renta fija y <span class="g">acciones</span></h1><p>Duración, convexidad, DDM, múltiplos, DCF y comparación de valuaciones.</p></div>
+<div class="tabs"><button id="T1" onclick="goTop(1)">Renta fija</button><button id="T2" onclick="goTop(2)">Acciones</button></div>
+
+<!-- ================= RENTA FIJA ================= -->
+<section id="secrf">
+  <div class="card">
+    <h2>Bono</h2>
+    <div class="grid">
+      <div><label>Valor nominal ($)</label><input id="bf" type="number" value="1000" min="0" step="any"></div>
+      <div><label>Tasa cupón anual (%)</label><input id="bc" type="number" value="6" step="0.1"></div>
+      <div><label>Pagos de cupón por año</label><select id="bm"><option value="1">Anual</option><option value="2" selected>Semestral</option><option value="4">Trimestral</option><option value="12">Mensual</option></select></div>
+      <div><label>Años al vencimiento</label><input id="by" type="number" value="10" step="0.5" min="0.25"></div>
+    </div>
+    <div class="seg"><button id="bm1" onclick="setBm('ytm')">Conozco el rendimiento (YTM)</button><button id="bm2" onclick="setBm('price')">Conozco el precio</button></div>
+    <div class="grid">
+      <div id="wy"><label>Rendimiento al vencimiento, YTM (%)</label><input id="byt" type="number" value="5" step="0.05"></div>
+      <div id="wp"><label>Precio de mercado ($)</label><input id="bpr" type="number" value="1077.95" step="0.01"></div>
+    </div>
+  </div>
+  <div class="kpis" id="bk"></div>
+  <div class="card"><h2>Flujos descontados y duración</h2><p class="hint" style="margin:0 0 8px">Cada barra es el valor presente de un flujo. La duración de Macaulay es el punto de equilibrio de esas barras, es decir, el plazo promedio ponderado en que recuperas tu dinero.</p><div class="leg"><span><i style="background:#8b7cff"></i>Cupón</span><span><i style="background:#ffb020"></i>Principal</span><span><i style="background:#fff"></i>Duración de Macaulay</span></div><div class="sc" id="bch1"></div></div>
+  <div class="card"><h2>Precio frente al rendimiento</h2><div class="leg"><span><i style="background:#8b7cff"></i>Precio exacto</span><span><i style="background:#ffb020"></i>Solo duración</span><span><i style="background:#00e08a"></i>Duración + convexidad</span></div><div class="sc" id="bch2"></div><p class="hint">La recta (duración) subestima el precio cuando las tasas cambian mucho. La convexidad corrige esa curvatura.</p></div>
+  <div class="card"><h2>Si cambia la tasa de interés</h2><div class="sc" id="btab"></div><p class="hint">ΔP/P ≈ −Dmod·Δy + ½·C·Δy². Con convexidad positiva ganas más cuando las tasas bajan de lo que pierdes cuando suben la misma cantidad.</p></div>
+</section>
+
+<!-- ================= ACCIONES ================= -->
+<section id="ac" style="display:none">
+  <div class="tabs sub"><button id="s1" onclick="goSub(1)">Datos</button><button id="s2" onclick="goSub(2)">DDM</button><button id="s3" onclick="goSub(3)">Múltiplos</button><button id="s4" onclick="goSub(4)">DCF</button><button id="s5" onclick="goSub(5)">Comparar</button></div>
+
+  <!-- DATOS -->
+  <div id="p1">
+    <div class="card">
+      <h2>Datos de la empresa</h2>
+      <div class="grid">
+        <div><label>Empresa o ticker</label><input id="tk" type="text" value="Mi empresa" data-text></div>
+        <div><label>Precio de mercado ($)</label><input id="px" type="number" value="80" step="any"></div>
+        <div><label>Acciones en circulación (millones)</label><input id="sh" type="number" value="50" step="any"></div>
+        <div><label>Ventas (millones $)</label><input id="sal" type="number" value="5000" step="any"></div>
+        <div><label>EBITDA (millones $)</label><input id="ebd" type="number" value="900" step="any"></div>
+        <div><label>Utilidad neta (millones $)</label><input id="ni" type="number" value="400" step="any"></div>
+        <div><label>Capital contable (millones $)</label><input id="eqv" type="number" value="3000" step="any"></div>
+        <div><label>Deuda neta (millones $)</label><input id="nd" type="number" value="1500" step="any"></div>
+        <div><label>Crecimiento esperado de utilidades (%)</label><input id="gr" type="number" value="8" step="0.1"></div>
+      </div>
+      <div class="mini" id="dd"></div>
+    </div>
+    <div class="card">
+      <h2>CAPM y WACC</h2>
+      <div class="grid">
+        <div><label>Tasa libre de riesgo, Rf (%)</label><input id="rf" type="number" value="5" step="0.1"></div>
+        <div><label>Rendimiento del mercado, Rm (%)</label><input id="rm" type="number" value="10" step="0.1"></div>
+        <div><label>Beta (β)</label><input id="beta" type="number" value="1.1" step="0.05"></div>
+        <div><label>Costo de la deuda, Kd (%)</label><input id="kd" type="number" value="7" step="0.1"></div>
+        <div><label>Tasa de impuestos (%)</label><input id="tx" type="number" value="30" step="0.5"></div>
+        <div><label>Peso de la deuda, D/V (%)</label><input id="wd" type="number" value="25" step="1"></div>
+      </div>
+      <p class="fx"><b>Ke = Rf + β × (Rm − Rf)</b> &nbsp;·&nbsp; <b>WACC = E/V × Ke + D/V × Kd × (1 − t)</b></p>
+      <div class="mini" id="cp"></div>
+      <p class="hint">Ke alimenta al DDM y el WACC al DCF. En cada sección puedes cambiarlos a mano y volver con el botón ↺.</p>
+    </div>
+  </div>
+
+  <!-- DDM -->
+  <div id="p2">
+    <div id="ddv"></div>
+    <div class="card">
+      <h2>Modelo de dividendos (DDM)</h2>
+      <div class="seg wrap"><button id="dm_gor" onclick="setDdm('gor')">Gordon</button><button id="dm_two" onclick="setDdm('two')">Dos etapas</button><button id="dm_tri" onclick="setDdm('tri')">Tres etapas</button><button id="dm_hm" onclick="setDdm('hm')">Modelo H</button><button id="dm_fcfe" onclick="setDdm('fcfe')">FCFE</button></div>
+      <div class="grid">
+        <div id="wd0"><label>Dividendo actual por acción, D0 ($)</label><input id="d0" type="number" value="4" step="0.01"></div>
+        <div><label>Tasa requerida r (%) <button onclick="relink('ddmr')">↺ Ke</button></label><input id="ddmr" type="number" step="0.01"></div>
+      </div>
+      <div id="m_gor" class="grid" style="margin-top:10px"><div><label>Crecimiento perpetuo g (%)</label><input id="gor_g" type="number" value="5" step="0.1"></div></div>
+      <div id="m_two" class="grid" style="margin-top:10px"><div><label>Crecimiento alto gH (%)</label><input id="two_gh" type="number" value="9" step="0.1"></div><div><label>Años de crecimiento alto</label><input id="two_n" type="number" value="5" min="1" max="30"></div><div><label>Crecimiento estable gL (%)</label><input id="two_gl" type="number" value="4.5" step="0.1"></div></div>
+      <div id="m_tri" class="grid" style="margin-top:10px"><div><label>Crecimiento etapa 1, g1 (%)</label><input id="tri_g1" type="number" value="10" step="0.1"></div><div><label>Años etapa 1</label><input id="tri_n1" type="number" value="3" min="1" max="20"></div><div><label>Años de transición</label><input id="tri_n2" type="number" value="4" min="1" max="20"></div><div><label>Crecimiento estable gL (%)</label><input id="tri_gl" type="number" value="4.5" step="0.1"></div></div>
+      <div id="m_hm" class="grid" style="margin-top:10px"><div><label>Crecimiento inicial gS (%)</label><input id="hm_gs" type="number" value="9" step="0.1"></div><div><label>Crecimiento estable gL (%)</label><input id="hm_gl" type="number" value="4.5" step="0.1"></div><div><label>Vida media H (años)</label><input id="hm_h" type="number" value="4" step="0.5" min="0.5"></div></div>
+      <div id="m_fcfe" style="margin-top:10px"><div class="grid"><div><label>Depreciación y amort. (millones $)</label><input id="fe_da" type="number" value="250" step="any"></div><div><label>CapEx (millones $)</label><input id="fe_cx" type="number" value="330" step="any"></div><div><label>Aumento de capital de trabajo (millones $)</label><input id="fe_nwc" type="number" value="60" step="any"></div><div><label>Deuda neta nueva (millones $)</label><input id="fe_nb" type="number" value="0" step="any"></div><div><label>Crecimiento alto gH (%)</label><input id="fe_gh" type="number" value="7" step="0.1"></div><div><label>Años de crecimiento alto</label><input id="fe_n" type="number" value="5" min="1" max="30"></div><div><label>Crecimiento estable gL (%)</label><input id="fe_gl" type="number" value="4" step="0.1"></div></div><p class="fx"><b>FCFE = Utilidad neta + D&amp;A − CapEx − ΔCT + Deuda neta nueva</b>. La utilidad neta viene de la pestaña Datos.</p></div>
+      <p class="fx" id="ddf"></p>
+    </div>
+    <div class="kpis" id="ddk"></div>
+    <div class="card"><h2>Flujos proyectados y su valor presente</h2><div class="leg"><span><i style="background:#3a3a46"></i>Flujo</span><span><i style="background:#8b7cff"></i>Valor presente</span></div><div class="sc" id="ddc"></div><p class="hint" id="ddn"></p></div>
+    <div class="card"><h2>Sensibilidad a g y r</h2><p class="hint" style="margin:0 0 10px" id="dds"></p><div class="sc" id="ddt"></div></div>
+  </div>
+
+  <!-- MÚLTIPLOS -->
+  <div id="p3">
+    <div class="card"><h2>Múltiplos de la empresa</h2><div class="kpis" id="mk" style="margin:0"></div></div>
+    <div class="card">
+      <h2>Comparables</h2>
+      <p class="hint" style="margin:0 0 10px">Captura los múltiplos de empresas parecidas (ficticios en el ejemplo). También puedes pegar una tabla desde una hoja de cálculo.</p>
+      <div class="sc" id="ptbl"></div>
+      <div class="btns"><button class="p" onclick="addPeer()">+ Agregar comparable</button><button onclick="$('pimp').style.display=$('pimp').style.display==='none'?'block':'none'">Pegar tabla</button><button onclick="peerEx()">Restaurar ejemplo</button></div>
+      <div id="pimp" style="display:none;margin-top:10px"><label>Una empresa por línea: Nombre, P/E, P/B, P/S, EV/EBITDA, g %, ROE %</label><textarea id="pcsv" data-nosave placeholder="ACME, 14, 2.0, 1.3, 7.5, 9, 15"></textarea><div class="btns"><button class="p" onclick="impPeers()">Importar</button></div><p class="hint" id="pmsg"></p></div>
+    </div>
+    <div class="card"><h2>Estadísticas y valor implícito por acción</h2><div class="sc" id="mst"></div><p class="hint">Valor implícito = múltiplo de los comparables × dato de tu empresa. El rango usa el primer y el tercer cuartil.</p></div>
+    <div class="card">
+      <h2>Regresión de múltiplos</h2>
+      <div class="grid"><div><label>Múltiplo a explicar (Y)</label><select id="ry"><option value="pe">P/E</option><option value="pb">P/B</option><option value="ps">P/S</option><option value="ev">EV/EBITDA</option></select></div><div><label>Variable explicativa (X)</label><select id="rx"><option value="g">Crecimiento (g %)</option><option value="roe">ROE (%)</option></select></div></div>
+      <div class="kpis" id="rk" style="margin:12px 0"></div><div class="sc" id="rc"></div><p class="hint" id="rn"></p>
+    </div>
+  </div>
+
+  <!-- DCF -->
+  <div id="p4">
+    <div id="dcv"></div>
+    <div class="card">
+      <h2>Supuestos de proyección</h2>
+      <div class="grid">
+        <div><label>Años de proyección</label><input id="dc_n" type="number" value="5" min="2" max="10"></div>
+        <div><label>Crecimiento de ventas, año 1 (%)</label><input id="dc_g1" type="number" value="6" step="0.1"></div>
+        <div><label>Crecimiento de ventas, último año (%)</label><input id="dc_gn" type="number" value="4" step="0.1"></div>
+        <div><label>Margen EBITDA, año 1 (%)</label><input id="dc_m1" type="number" value="18" step="0.1"></div>
+        <div><label>Margen EBITDA, último año (%)</label><input id="dc_mn" type="number" value="18" step="0.1"></div>
+        <div><label>D&amp;A (% de ventas)</label><input id="dc_da" type="number" value="5" step="0.1"></div>
+        <div><label>CapEx (% de ventas)</label><input id="dc_cx" type="number" value="6.5" step="0.1"></div>
+        <div><label>Capital de trabajo (% del cambio en ventas)</label><input id="dc_nwc" type="number" value="10" step="0.5"></div>
+        <div><label>WACC (%) <button onclick="relink('dcfw')">↺ WACC</button></label><input id="dcfw" type="number" step="0.01"></div>
+      </div>
+      <h3>Valor terminal</h3>
+      <div class="grid">
+        <div><label>Método</label><select id="dc_tm"><option value="gordon">Crecimiento perpetuo (Gordon)</option><option value="exit">Múltiplo de salida EV/EBITDA</option></select></div>
+        <div id="wgt"><label>Crecimiento terminal g (%)</label><input id="dc_gt" type="number" value="2.5" step="0.1"></div>
+        <div id="wxm"><label>Múltiplo de salida (x)</label><input id="dc_xm" type="number" value="6.5" step="0.1"></div>
+      </div>
+      <p class="fx"><b>FCFF = EBIT × (1 − t) + D&amp;A − CapEx − ΔCT</b> &nbsp;·&nbsp; <b>EV = Σ FCFF/(1+WACC)ᵗ + VT/(1+WACC)ⁿ</b></p>
+    </div>
+    <div class="kpis" id="dck"></div>
+    <div class="card"><h2>Proyecciones (millones $)</h2><div class="sc" id="dct"></div></div>
+    <div class="card"><h2>De qué se compone el valor de la empresa</h2><div id="dcb"></div><div class="sc" id="dcc" style="margin-top:6px"></div></div>
+    <div class="card"><h2>Análisis de sensibilidad</h2><p class="hint" style="margin:0 0 10px" id="dcs"></p><div class="sc" id="dcd"></div></div>
+  </div>
+
+  <!-- COMPARAR -->
+  <div id="p5">
+    <div id="cmv"></div>
+    <div class="card"><h2>Rango de valuación</h2><div class="leg"><span><i style="background:#8b7cff"></i>DDM</span><span><i style="background:#38bdf8"></i>DCF</span><span><i style="background:#ffb020"></i>Múltiplos</span><span><i style="background:#2dd4bf"></i>Regresión</span></div><div class="sc" id="cmf"></div><p class="hint">Cada barra va del valor bajo al alto de ese método. La marca vertical blanca es el precio de mercado.</p></div>
+    <div class="card"><h2>Resumen por método</h2><div class="sc" id="cmt"></div></div>
+    <div class="card"><h2>Valor combinado</h2><div class="grid"><div><label>Peso del DDM (%)</label><input id="w_ddm" type="number" value="25" step="5"></div><div><label>Peso del DCF (%)</label><input id="w_dcf" type="number" value="50" step="5"></div><div><label>Peso de múltiplos (%)</label><input id="w_mul" type="number" value="25" step="5"></div></div><p class="hint">Los pesos se reajustan automáticamente entre los métodos que se pudieron calcular. «Múltiplos» es el promedio de los valores implícitos por P/E, P/B, P/S, EV/EBITDA y PEG.</p></div>
+    <p class="hint">Herramienta educativa: los valores dependen por completo de los supuestos que captures y no son una recomendación de inversión.</p>
+  </div>
+</section>
+</main>
+
+<script>
+const $=id=>document.getElementById(id);
+const N=id=>{const v=parseFloat($(id).value);return isNaN(v)?0:v};
+const isNum=v=>typeof v==="number"&&isFinite(v);
+const esc=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const pc=(v,d=2)=>isNum(v)?(v*100).toFixed(d)+"%":"—";
+const mon=v=>!isNum(v)?"—":(v<0?"−$":"$")+Math.abs(v).toLocaleString("es-MX",{minimumFractionDigits:2,maximumFractionDigits:2});
+const mM=v=>!isNum(v)?"—":(v<0?"−$":"$")+Math.abs(Math.round(v)).toLocaleString("es-MX");
+const xx=v=>isNum(v)?v.toFixed(2)+"x":"—";
+const sg=v=>(v>=0?"+":"−")+Math.abs(v*100).toFixed(1)+"%";
+const nice=r=>{r=r||1;const m=Math.pow(10,Math.floor(Math.log10(r))),f=r/m;return(f<=1?1:f<=2?2:f<=5?5:10)*m};
+const svgw=(W,H,b,mw=420)=>`<svg viewBox="0 0 ${W} ${H}" width="100%" style="min-width:${mw}px">${b}</svg>`;
+function axis(W,H,m,lo,hi,fmt){
+  const step=nice((hi-lo)/4),a=Math.floor(lo/step+1e-9)*step,b=Math.ceil(hi/step-1e-9)*step,sy=v=>m.t+(b-v)/((b-a)||1)*(H-m.t-m.b),k=Math.round((b-a)/step);let g="";
+  for(let i=0;i<=k;i++){const v=a+i*step;g+=`<line x1="${m.l}" x2="${W-m.r}" y1="${sy(v)}" y2="${sy(v)}" stroke="${Math.abs(v)<1e-9?"#8a8a93":"var(--bd)"}"/><text x="${m.l-6}" y="${sy(v)+4}" text-anchor="end">${fmt(v)}</text>`}
+  return{sy,g,a,b};
+}
+
+/* ---------- estado y persistencia ---------- */
+const PEERS0=[{n:"Comparable 1",pe:14,pb:2.0,ps:1.3,ev:7.5,g:9,roe:15},{n:"Comparable 2",pe:11,pb:1.4,ps:0.9,ev:6.0,g:6,roe:11},{n:"Comparable 3",pe:16,pb:2.4,ps:1.6,ev:8.5,g:11,roe:17},{n:"Comparable 4",pe:12.5,pb:1.7,ps:1.1,ev:6.8,g:7,roe:12.5},{n:"Comparable 5",pe:9.5,pb:1.1,ps:0.7,ev:5.4,g:4,roe:9}];
+let ST={top:1,sub:1,ddm:"gor",bm:"ytm"},AUTO={ddmr:true,dcfw:true},PEERS=JSON.parse(JSON.stringify(PEERS0)),SV={};
+try{SV=JSON.parse(localStorage.getItem("val_v1")||"{}")}catch(e){}
+if(SV.st)ST={...ST,...SV.st};if(SV.auto)AUTO={...AUTO,...SV.auto};if(Array.isArray(SV.peers)&&SV.peers.length)PEERS=SV.peers;
+if(SV.v)Object.entries(SV.v).forEach(([k,v])=>{const e=$(k);if(e&&!e.dataset.nosave)e.value=v});
+function persist(){const o={st:ST,auto:AUTO,peers:PEERS,v:{}};document.querySelectorAll("main [id]").forEach(e=>{if((e.tagName==="INPUT"||e.tagName==="SELECT")&&!e.dataset.nosave)o.v[e.id]=e.value});try{localStorage.setItem("val_v1",JSON.stringify(o))}catch(e){}}
+function relink(id){AUTO[id]=true;update()}
+
+/* ---------- navegación ---------- */
+function goTop(n){ST.top=n;nav()}
+function goSub(n){ST.sub=n;nav()}
+function nav(){
+  $("secrf").style.display=ST.top===1?"block":"none";$("ac").style.display=ST.top===2?"block":"none";
+  $("T1").className=ST.top===1?"on":"";$("T2").className=ST.top===2?"on":"";
+  for(let i=1;i<=5;i++){$("p"+i).style.display=ST.sub===i?"block":"none";$("s"+i).className=ST.sub===i?"on":""}
+  $("bm1").className=ST.bm==="ytm"?"on":"";$("bm2").className=ST.bm==="price"?"on":"";
+  $("wy").style.display=ST.bm==="ytm"?"block":"none";$("wp").style.display=ST.bm==="price"?"block":"none";
+  ["gor","two","tri","hm","fcfe"].forEach(k=>{$("dm_"+k).className=ST.ddm===k?"on":"";$("m_"+k).style.display=ST.ddm===k?"block":"none"});
+  $("wd0").style.display=ST.ddm==="fcfe"?"none":"block";
+  const ex=$("dc_tm").value==="exit";$("wgt").style.display=ex?"none":"block";$("wxm").style.display=ex?"block":"none";
+  persist();
+}
+function setBm(m){ST.bm=m;if(m==="price"&&!$("bpr").dataset.touched){}update()}
+function setDdm(m){ST.ddm=m;update()}
+
+/* =====================  RENTA FIJA  ===================== */
+const bond=(F,cpn,m,yrs)=>({F,m,n:Math.max(1,Math.round(yrs*m)),c:F*cpn/m,cpn});
+function bprice(b,y){const i=y/b.m;let p=0;for(let t=1;t<=b.n;t++)p+=b.c/Math.pow(1+i,t);return p+b.F/Math.pow(1+i,b.n)}
+function bstats(b,y){
+  const i=y/b.m;let P=0,wt=0,cx=0;const flows=[];
+  for(let t=1;t<=b.n;t++){const cpn=b.c,prin=t===b.n?b.F:0,pv=(cpn+prin)/Math.pow(1+i,t);P+=pv;wt+=t*pv;cx+=t*(t+1)*pv;flows.push({t,pvc:cpn/Math.pow(1+i,t),pvp:prin/Math.pow(1+i,t),pv})}
+  const mac=wt/P/b.m,mod=mac/(1+i),conv=cx/(P*Math.pow(1+i,2))/(b.m*b.m);
+  return{P,mac,mod,conv,flows};
+}
+function solveY(b,price){
+  let lo=-0.5,hi=3;if(!(price<=bprice(b,lo)&&price>=bprice(b,hi)))return null;
+  for(let k=0;k<200;k++){const mid=(lo+hi)/2;if(bprice(b,mid)>price)lo=mid;else hi=mid}return(lo+hi)/2;
+}
+function renderBond(){
+  const F=N("bf"),cpn=N("bc")/100,m=+$("bm").value,yrs=N("by"),b=bond(F,cpn,m,yrs);
+  let y,P;
+  if(ST.bm==="ytm"){y=N("byt")/100;P=bprice(b,y)}else{P=N("bpr");y=P>0?solveY(b,P):null}
+  if(!(F>0)||!(yrs>0)||y===null||!isNum(y)||!isNum(P)||P<=0){$("bk").innerHTML='<p class="hint">Revisa los datos: con ese precio no existe un rendimiento válido.</p>';$("bch1").innerHTML=$("bch2").innerHTML=$("btab").innerHTML="";return}
+  const s=bstats(b,y),dv01=s.mod*P*0.0001,cur=b.c*b.m/P,tag=Math.abs(P/F-1)<0.0005?"A la par":P>F?"Con prima":"Con descuento";
+  $("bk").innerHTML=[["Precio",mon(P),tag],["Rendimiento (YTM)",pc(y),"Corriente: "+pc(cur)],["Duración de Macaulay",s.mac.toFixed(3)+" años","Plazo promedio ponderado"],["Duración modificada",s.mod.toFixed(3),"Sensibilidad por 1 pp de tasa"],["Convexidad",s.conv.toFixed(2),"Curvatura del precio"],["DV01",mon(dv01),"Cambio de precio por 1 pb"]].map(([a,v,c])=>`<div class="kpi"><span>${a}</span><b>${v}</b><small>${c}</small></div>`).join("");
+  // flujos descontados
+  {const W=640,H=250,mg={l:56,r:12,t:16,b:34},mx=Math.max(...s.flows.map(f=>f.pv))*1.15,a=axis(W,H,mg,0,mx,v=>"$"+Math.round(v)),n=s.flows.length,bw=(W-mg.l-mg.r)/n;let o=a.g;
+   s.flows.forEach(f=>{const x=mg.l+(f.t-1)*bw+bw*.12,w=Math.max(1,bw*.76),yc=a.sy(f.pvc),y0=a.sy(0);o+=`<rect x="${x}" y="${yc}" width="${w}" height="${y0-yc}" fill="#8b7cff"/>`;if(f.pvp>0){const yp=a.sy(f.pvc+f.pvp);o+=`<rect x="${x}" y="${yp}" width="${w}" height="${yc-yp}" fill="#ffb020"/>`}});
+   const step=Math.max(1,Math.ceil(yrs/10));for(let k=step;k<=yrs+1e-9;k+=step){const x=mg.l+(k*m-.5)*bw;o+=`<text x="${x}" y="${H-12}" text-anchor="middle">${k}</text>`}o+=`<text x="${mg.l}" y="${H-12}" text-anchor="start" style="opacity:.0">.</text><text x="${(W+mg.l)/2}" y="${H-1}" text-anchor="middle">Años</text>`;
+   const xm=mg.l+(s.mac*m-.5)*bw;o+=`<line x1="${xm}" x2="${xm}" y1="${mg.t}" y2="${H-mg.b}" stroke="#fff" stroke-width="1.5" stroke-dasharray="4 3"/><polygon points="${xm-6},${H-mg.b+9} ${xm+6},${H-mg.b+9} ${xm},${H-mg.b+1}" fill="#fff"/><text x="${Math.min(xm+6,W-150)}" y="${mg.t+10}" style="fill:#fff;font-weight:700">Macaulay ${s.mac.toFixed(2)} años</text>`;
+   $("bch1").innerHTML=svgw(W,H,o)}
+  // precio vs rendimiento
+  {const W=640,H=290,mg={l:56,r:14,t:14,b:34},y0=Math.max(0.0005,y-0.03),y1=y+0.03,pts=[],pd=[],pc2=[];
+   for(let i=0;i<=60;i++){const yy=y0+(y1-y0)*i/60,dy=yy-y;pts.push([yy,bprice(b,yy)]);pd.push([yy,P*(1-s.mod*dy)]);pc2.push([yy,P*(1-s.mod*dy+.5*s.conv*dy*dy)])}
+   const all=[...pts,...pd,...pc2].map(p=>p[1]),a=axis(W,H,mg,Math.min(...all),Math.max(...all),v=>"$"+Math.round(v)),sx=v=>mg.l+(v-y0)/(y1-y0)*(W-mg.l-mg.r);let o=a.g;
+   for(let i=0;i<=6;i++){const v=y0+(y1-y0)*i/6;o+=`<text x="${sx(v)}" y="${H-14}" text-anchor="middle">${(v*100).toFixed(1)}%</text>`}
+   const line=(arr,c,d)=>`<polyline fill="none" stroke="${c}" stroke-width="2.4" ${d?'stroke-dasharray="6 4"':""} points="${arr.map(p=>sx(p[0])+","+a.sy(p[1])).join(" ")}"/>`;
+   o+=line(pd,"#ffb020",1)+line(pc2,"#00e08a",1)+line(pts,"#8b7cff",0)+`<circle cx="${sx(y)}" cy="${a.sy(P)}" r="5" fill="#fff"/><text x="${W/2}" y="${H-1}" text-anchor="middle">Rendimiento</text>`;
+   $("bch2").innerHTML=svgw(W,H,o)}
+  // choques
+  const sh=[-200,-100,-50,50,100,200];
+  $("btab").innerHTML=`<table><tr><th>Δ tasa</th><th>Precio exacto</th><th>Δ% exacto</th><th>Solo duración</th><th>Dur. + convex.</th></tr>`+sh.map(bp=>{const dy=bp/1e4,ye=y+dy,pe=ye>-0.99*0+(-0.5)?bprice(b,ye):NaN,ex=pe/P-1,d1=-s.mod*dy,d2=d1+.5*s.conv*dy*dy;return`<tr><td>${bp>0?"+":""}${bp} pb</td><td>${mon(pe)}</td><td class="${ex>=0?"up":"dn"}">${sg(ex)}</td><td>${sg(d1)}</td><td>${sg(d2)}</td></tr>`}).join("")+"</table>";
+}
+
+/* =====================  DATOS  ===================== */
+function COMP(){
+  const sh=N("sh")||1,px=N("px"),sal=N("sal"),ebd=N("ebd"),ni=N("ni"),eqv=N("eqv"),nd=N("nd"),gr=N("gr"),eps=ni/sh,bv=eqv/sh,sps=sal/sh,mc=px*sh,ev=mc+nd;
+  return{sh,px,sal,ebd,ni,eqv,nd,gr,eps,bv,sps,mc,ev,roe:eqv?ni/eqv:0,pe:eps>0?px/eps:null,pb:bv>0?px/bv:null,ps:sps>0?px/sps:null,eve:ebd>0?ev/ebd:null,peg:(eps>0&&gr>0)?(px/eps)/gr:null};
+}
+function CAP(){const rf=N("rf")/100,rm=N("rm")/100,b=N("beta"),kd=N("kd")/100,t=N("tx")/100,wd=Math.min(1,Math.max(0,N("wd")/100)),ke=rf+b*(rm-rf);return{rf,rm,b,kd,t,wd,ke,wacc:(1-wd)*ke+wd*kd*(1-t)}}
+function renderDatos(){
+  const c=COMP(),k=CAP(),it=(a,v)=>`<div><span>${a}</span><b>${v}</b></div>`;
+  $("dd").innerHTML=it("Utilidad por acción (UPA)",mon(c.eps))+it("Valor en libros por acción",mon(c.bv))+it("Ventas por acción",mon(c.sps))+it("Capitalización (millones)",mM(c.mc))+it("Valor empresa, EV (millones)",mM(c.ev))+it("ROE",pc(c.roe,1))+it("Margen EBITDA",pc(c.sal?c.ebd/c.sal:0,1))+it("Margen neto",pc(c.sal?c.ni/c.sal:0,1));
+  $("cp").innerHTML=it("Prima de mercado",pc(k.rm-k.rf))+it("Costo del capital Ke",pc(k.ke))+it("Kd después de impuestos",pc(k.kd*(1-k.t)))+it("Peso capital E/V",pc(1-k.wd,0))+it("WACC",pc(k.wacc));
+}
+
+/* =====================  DDM  ===================== */
+function ddm(model,p){
+  const r=p.r,flows=[];
+  const add=(t,d)=>{const pv=d/Math.pow(1+r,t);flows.push({t,d,pv});return pv};
+  if(!(r>p.gl))return null;
+  let v,tvPV,s=0;
+  if(model==="gor"){v=p.d0*(1+p.gl)/(r-p.gl);for(let t=1;t<=10;t++)s+=add(t,p.d0*Math.pow(1+p.gl,t));tvPV=Math.max(0,v-s)}
+  else if(model==="two"||model==="fcfe"){let d=model==="fcfe"?p.f0:p.d0;for(let t=1;t<=p.n;t++){d*=1+p.gh;s+=add(t,d)}tvPV=d*(1+p.gl)/(r-p.gl)/Math.pow(1+r,p.n);v=s+tvPV}
+  else if(model==="tri"){let d=p.d0,t=0;for(let i=0;i<p.n1;i++){t++;d*=1+p.g1;s+=add(t,d)}for(let k=1;k<=p.n2;k++){t++;d*=1+(p.g1-(p.g1-p.gl)*k/(p.n2+1));s+=add(t,d)}tvPV=d*(1+p.gl)/(r-p.gl)/Math.pow(1+r,t);v=s+tvPV}
+  else{v=p.d0*((1+p.gl)+p.H*(p.gs-p.gl))/(r-p.gl);let d=p.d0;for(let t=1;t<=10;t++){const g=t>=2*p.H?p.gl:p.gs+(p.gl-p.gs)*t/(2*p.H);d*=1+g;s+=add(t,d)}tvPV=Math.min(v,Math.max(0,v-s))}
+  return{v,flows,tvPV};
+}
+function ddmParams(){
+  const m=ST.ddm,c=COMP(),p={r:N("ddmr")/100,d0:N("d0")};
+  if(m==="gor")p.gl=N("gor_g")/100;
+  if(m==="two"){p.gh=N("two_gh")/100;p.n=Math.max(1,Math.round(N("two_n")));p.gl=N("two_gl")/100}
+  if(m==="tri"){p.g1=N("tri_g1")/100;p.n1=Math.max(1,Math.round(N("tri_n1")));p.n2=Math.max(1,Math.round(N("tri_n2")));p.gl=N("tri_gl")/100}
+  if(m==="hm"){p.gs=N("hm_gs")/100;p.gl=N("hm_gl")/100;p.H=Math.max(.1,N("hm_h"))}
+  if(m==="fcfe"){p.f0=(c.ni+N("fe_da")-N("fe_cx")-N("fe_nwc")+N("fe_nb"))/c.sh;p.gh=N("fe_gh")/100;p.n=Math.max(1,Math.round(N("fe_n")));p.gl=N("fe_gl")/100}
+  return p;
+}
+function verdict(v,px,what){
+  if(!isNum(v)||v<=0)return`<div class="verdict v-neu">No se puede calcular<small>Revisa los supuestos (por ejemplo, la tasa requerida debe ser mayor que el crecimiento de largo plazo).</small></div>`;
+  const u=v/px-1,cls=u>=.1?"v-ok":u<=-.1?"v-no":"v-mid",t=u>=.1?"✅ INFRAVALORADA":u<=-.1?"⛔ SOBREVALUADA":"⚖️ VALUACIÓN JUSTA";
+  return`<div class="verdict ${cls}">${t}<small>${what}: ${mon(v)} frente a un precio de ${mon(px)} (${sg(u)}).</small></div>`;
+}
+let R={};
+const DDMF={gor:"V0 = D0 × (1 + g) / (r − g)",two:"V0 = Σ Dt/(1+r)ᵗ + [D(n) × (1 + gL)/(r − gL)]/(1+r)ⁿ",tri:"Crecimiento g1 → transición lineal → gL; valor terminal con Gordon",hm:"V0 = D0 × [(1 + gL) + H × (gS − gL)] / (r − gL)",fcfe:"Igual que dos etapas, pero con el FCFE por acción en lugar del dividendo"};
+function renderDDM(){
+  const c=COMP(),p=ddmParams(),res=ddm(ST.ddm,p),gl=p.gl;
+  $("ddf").innerHTML="<b>"+DDMF[ST.ddm]+"</b>";
+  R.ddm=res?{v:res.v,res}:null;
+  $("ddv").innerHTML=verdict(res&&res.v,c.px,ST.ddm==="fcfe"?"Valor por FCFE":"Valor por DDM");
+  if(!res){$("ddk").innerHTML=$("ddc").innerHTML=$("ddt").innerHTML="";$("ddn").textContent="";R.ddmR=null;return}
+  const k=[["Valor intrínseco",mon(res.v),"por acción"],["Precio de mercado",mon(c.px),"hoy"],["Diferencia",sg(res.v/c.px-1),"valor vs precio"],["Valor terminal",pc(res.tvPV/res.v,0),"del valor total"]];
+  if(ST.ddm==="gor"){const gi=(p.r*c.px-p.d0)/(c.px+p.d0);k.push(["g implícito en el precio",pc(gi),"según Gordon"]);k.push(["Rend. por dividendo",pc(p.d0*(1+gl)/res.v),"D1 / valor"])}
+  if(ST.ddm==="fcfe")k.push(["FCFE por acción hoy",mon(p.f0),"base del modelo"]);
+  $("ddk").innerHTML=k.map(([a,v,s])=>`<div class="kpi"><span>${a}</span><b>${v}</b><small>${s}</small></div>`).join("");
+  // flujos
+  {const fl=res.flows.slice(0,20),W=640,H=230,mg={l:48,r:12,t:12,b:26},mx=Math.max(...fl.map(f=>f.d))*1.12,a=axis(W,H,mg,0,mx,v=>"$"+v.toFixed(v<10?1:0)),bw=(W-mg.l-mg.r)/fl.length;let o=a.g;
+   fl.forEach((f,i)=>{const x=mg.l+i*bw+bw*.14,w=bw*.72,y0=a.sy(0);o+=`<rect x="${x}" y="${a.sy(f.d)}" width="${w}" height="${y0-a.sy(f.d)}" rx="3" fill="#3a3a46"><title>Año ${f.t}: ${mon(f.d)}</title></rect><rect x="${x+w*.18}" y="${a.sy(f.pv)}" width="${w*.64}" height="${y0-a.sy(f.pv)}" rx="3" fill="#8b7cff"><title>VP: ${mon(f.pv)}</title></rect><text x="${x+w/2}" y="${H-8}" text-anchor="middle">${f.t}</text>`});
+   $("ddc").innerHTML=svgw(W,H,o);
+   $("ddn").textContent=ST.ddm==="gor"?"Se muestran los primeros 10 años; el valor de Gordon incluye todos los flujos posteriores.":ST.ddm==="hm"?"Flujos ilustrativos: la fórmula H aproxima una caída lineal del crecimiento durante 2H años.":"El valor terminal agrupa todos los flujos posteriores al último año mostrado."}
+  // sensibilidad
+  const dr=[-.02,-.01,0,.01,.02],dg=[-.01,-.005,0,.005,.01];let h=`<table><tr><th>${ST.ddm==="gor"?"g":"gL"} \\ r</th>`+dr.map(d=>`<th>${pc(p.r+d)}</th>`).join("")+"</tr>";
+  dg.forEach(d2=>{h+=`<tr><th>${pc(gl+d2)}</th>`;dr.forEach(d1=>{const q=ddm(ST.ddm,{...p,r:p.r+d1,gl:gl+d2}),base=d1===0&&d2===0;h+=q?`<td style="background:${q.v>=c.px?"var(--okbg)":"var(--nobg)"};color:${q.v>=c.px?"var(--ok)":"var(--no)"};${base?"font-weight:700;outline:2px solid var(--ac)":""}">${q.v.toFixed(2)}</td>`:`<td style="color:var(--mut)">—</td>`});h+="</tr>"});
+  $("ddt").innerHTML=h+"</table>";$("dds").textContent=`Valor por acción según la tasa requerida (columnas) y el crecimiento de largo plazo (filas). Verde: supera el precio de ${mon(c.px)}.`;
+  const lo=ddm(ST.ddm,{...p,r:p.r+.01,gl:gl-.005}),hi=ddm(ST.ddm,{...p,r:p.r-.01,gl:gl+.005});
+  R.ddmR=lo&&hi?{lo:lo.v,mid:res.v,hi:hi.v}:{lo:res.v,mid:res.v,hi:res.v};
+}
+
+/* =====================  MÚLTIPLOS  ===================== */
+const pctl=(a,q)=>{const s=[...a].sort((x,y)=>x-y);if(!s.length)return null;const i=(s.length-1)*q,l=Math.floor(i),h=Math.ceil(i);return s[l]+(s[h]-s[l])*(i-l)};
+const MU=[
+ {k:"pe",n:"P/E",own:c=>c.pe,f:(m,c)=>c.eps>0?m*c.eps:null,get:p=>p.pe},
+ {k:"pb",n:"P/B",own:c=>c.pb,f:(m,c)=>c.bv>0?m*c.bv:null,get:p=>p.pb},
+ {k:"ps",n:"P/S",own:c=>c.ps,f:(m,c)=>c.sps>0?m*c.sps:null,get:p=>p.ps},
+ {k:"ev",n:"EV/EBITDA",own:c=>c.eve,f:(m,c)=>c.ebd>0?(m*c.ebd-c.nd)/c.sh:null,get:p=>p.ev},
+ {k:"peg",n:"PEG",own:c=>c.peg,f:(m,c)=>(c.gr>0&&c.eps>0)?m*c.gr*c.eps:null,get:p=>(isNum(p.pe)&&isNum(p.g)&&p.g>0&&p.pe>0)?p.pe/p.g:null}];
+function renderPeers(){
+  let h='<table class="pt"><tr><th>Empresa</th><th>P/E</th><th>P/B</th><th>P/S</th><th>EV/EBITDA</th><th>g %</th><th>ROE %</th><th></th></tr>';
+  PEERS.forEach((p,i)=>{h+=`<tr><td><input data-nosave data-i="${i}" data-k="n" value="${esc(p.n)}"></td>`+["pe","pb","ps","ev","g","roe"].map(k=>`<td><input data-nosave type="number" step="any" data-i="${i}" data-k="${k}" value="${isNum(p[k])?p[k]:""}"></td>`).join("")+`<td><button class="x" onclick="delPeer(${i})">✕</button></td></tr>`});
+  $("ptbl").innerHTML=h+"</table>";
+  $("ptbl").querySelectorAll("input").forEach(e=>e.addEventListener("input",()=>{const p=PEERS[+e.dataset.i],k=e.dataset.k;p[k]=k==="n"?e.value:(e.value===""?null:parseFloat(e.value));update()}));
+}
+function addPeer(){PEERS.push({n:"Comparable "+(PEERS.length+1),pe:null,pb:null,ps:null,ev:null,g:null,roe:null});renderPeers();update()}
+function delPeer(i){PEERS.splice(i,1);renderPeers();update()}
+function peerEx(){PEERS=JSON.parse(JSON.stringify(PEERS0));renderPeers();update()}
+function impPeers(){
+  const rows=$("pcsv").value.split(/\n/).map(l=>l.trim()).filter(Boolean).map(l=>{const t=l.split(/[,;\t]+/).map(x=>x.trim());const nums=t.slice(1,7).map(x=>{const v=parseFloat(x.replace(",","."));return isNaN(v)?null:v});return{n:t[0],pe:nums[0],pb:nums[1],ps:nums[2],ev:nums[3],g:nums[4],roe:nums[5]}}).filter(r=>[r.pe,r.pb,r.ps,r.ev,r.g,r.roe].some(isNum));
+  if(!rows.length){$("pmsg").textContent="No encontré filas con números. Usa comas, punto y coma o tabuladores.";return}
+  PEERS=rows;renderPeers();update();$("pmsg").textContent=rows.length+" comparables importados.";$("pcsv").value="";
+}
+function renderMult(){
+  const c=COMP();
+  $("mk").innerHTML=[["P/E",xx(c.pe)],["P/B",xx(c.pb)],["P/S",xx(c.ps)],["PEG",xx(c.peg)],["EV/EBITDA",xx(c.eve)]].map(([a,v])=>`<div class="kpi"><span>${a}</span><b>${v}</b></div>`).join("");
+  const items=[];
+  let h=`<table><tr><th>Múltiplo</th><th>Empresa</th><th>Mediana</th><th>Q1 – Q3</th><th>n</th><th>Valor (mediana)</th><th>Rango</th><th>vs precio</th></tr>`;
+  MU.forEach(m=>{
+    const a=PEERS.map(m.get).filter(v=>isNum(v)&&v>0),med=pctl(a,.5),q1=pctl(a,.25),q3=pctl(a,.75),own=m.own(c);
+    const v=med==null?null:m.f(med,c),lo=q1==null?null:m.f(q1,c),hi=q3==null?null:m.f(q3,c);
+    if(isNum(v)&&isNum(lo)&&isNum(hi))items.push({k:m.k,n:m.n,lo:Math.min(lo,hi),mid:v,hi:Math.max(lo,hi)});
+    h+=`<tr><td>${m.n}</td><td>${xx(own)}</td><td>${med==null?"—":xx(med)}</td><td>${q1==null?"—":xx(q1)+" – "+xx(q3)}</td><td>${a.length}</td><td><b>${mon(v)}</b></td><td>${isNum(lo)&&isNum(hi)?mon(Math.min(lo,hi))+" – "+mon(Math.max(lo,hi)):"—"}</td><td class="${isNum(v)?(v>=c.px?"up":"dn"):""}">${isNum(v)?sg(v/c.px-1):"—"}</td></tr>`;
+  });
+  $("mst").innerHTML=h+"</table>";
+  R.mult=items.length?{items,lo:items.reduce((s,i)=>s+i.lo,0)/items.length,mid:items.reduce((s,i)=>s+i.mid,0)/items.length,hi:items.reduce((s,i)=>s+i.hi,0)/items.length}:null;
+  renderReg(c);
+}
+function renderReg(c){
+  const Y=$("ry").value,X=$("rx").value,mu=MU.find(m=>m.k===Y);
+  const pts=PEERS.map(p=>({x:X==="g"?p.g:p.roe,y:p[Y]})).filter(p=>isNum(p.x)&&isNum(p.y));
+  R.reg=null;
+  if(pts.length<3){$("rk").innerHTML="";$("rc").innerHTML="";$("rn").textContent="Necesitas al menos 3 comparables con ambos datos para estimar la regresión.";return}
+  const n=pts.length,mx=pts.reduce((s,p)=>s+p.x,0)/n,my=pts.reduce((s,p)=>s+p.y,0)/n;
+  const sxx=pts.reduce((s,p)=>s+(p.x-mx)**2,0),sxy=pts.reduce((s,p)=>s+(p.x-mx)*(p.y-my),0),syy=pts.reduce((s,p)=>s+(p.y-my)**2,0);
+  if(sxx===0){$("rk").innerHTML="";$("rc").innerHTML="";$("rn").textContent="Todos los comparables tienen el mismo valor de X; no se puede ajustar una recta.";return}
+  const b=sxy/sxx,a=my-b*mx,r2=syy?sxy*sxy/(sxx*syy):1,sse=pts.reduce((s,p)=>s+(p.y-(a+b*p.x))**2,0),se=n>2?Math.sqrt(sse/(n-2)):0;
+  const x0=X==="g"?c.gr:c.roe*100,mh=a+b*x0,v=mu.f(mh,c),lo=mu.f(mh-se,c),hi=mu.f(mh+se,c),own=mu.own(c);
+  if(isNum(v)&&isNum(lo)&&isNum(hi))R.reg={lo:Math.min(lo,hi),mid:v,hi:Math.max(lo,hi),n:mu.n+" vs "+(X==="g"?"g":"ROE")};
+  $("rk").innerHTML=[["Múltiplo estimado",xx(mh),"según tu "+(X==="g"?"crecimiento":"ROE")],["R²",r2.toFixed(2),r2>=.7?"ajuste bueno":r2>=.4?"ajuste moderado":"ajuste débil"],["Pendiente",b.toFixed(3),"por cada punto de X"],["Valor implícito",mon(v),isNum(v)?sg(v/c.px-1)+" vs precio":"—"]].map(([a2,v2,s])=>`<div class="kpi"><span>${a2}</span><b>${v2}</b><small>${s}</small></div>`).join("");
+  const W=640,H=270,mg={l:48,r:14,t:14,b:36},xs=[...pts.map(p=>p.x),x0],ys=[...pts.map(p=>p.y),mh,isNum(own)?own:mh],xlo=Math.min(...xs),xhi=Math.max(...xs),pd=(xhi-xlo||1)*.12,ylo=Math.min(...ys),yhi=Math.max(...ys),py=(yhi-ylo||1)*.15,ay=axis(W,H,mg,Math.max(0,ylo-py),yhi+py,v=>v.toFixed(1)+"x"),sx=v=>mg.l+(v-(xlo-pd))/((xhi+pd)-(xlo-pd))*(W-mg.l-mg.r);let o=ay.g;
+  for(let i=0;i<=5;i++){const v=(xlo-pd)+((xhi+pd)-(xlo-pd))*i/5;o+=`<text x="${sx(v)}" y="${H-16}" text-anchor="middle">${v.toFixed(1)}</text>`}
+  o+=`<text x="${(W+mg.l)/2}" y="${H-2}" text-anchor="middle">${X==="g"?"Crecimiento g (%)":"ROE (%)"}</text><line x1="${sx(xlo-pd)}" y1="${ay.sy(a+b*(xlo-pd))}" x2="${sx(xhi+pd)}" y2="${ay.sy(a+b*(xhi+pd))}" stroke="#8b7cff" stroke-width="2" stroke-dasharray="5 4"/>`;
+  pts.forEach(p=>o+=`<circle cx="${sx(p.x)}" cy="${ay.sy(p.y)}" r="5" fill="#ffb020"/>`);
+  if(isNum(own))o+=`<circle cx="${sx(x0)}" cy="${ay.sy(own)}" r="6" fill="#ff4d6a"/><text x="${sx(x0)+9}" y="${ay.sy(own)+4}" style="fill:#ff4d6a;font-weight:700">Hoy ${own.toFixed(1)}x</text>`;
+  o+=`<circle cx="${sx(x0)}" cy="${ay.sy(mh)}" r="6" fill="none" stroke="#00e08a" stroke-width="2.5"/><text x="${sx(x0)+9}" y="${ay.sy(mh)-8}" style="fill:#00e08a;font-weight:700">Estimado ${mh.toFixed(1)}x</text>`;
+  $("rc").innerHTML=svgw(W,H,o);$("rn").textContent=`Ajuste con ${n} comparables. Naranja: comparables · rojo: tu múltiplo actual · verde: múltiplo que sugiere la recta. Con pocos datos la regresión es solo una referencia.`;
+}
+
+/* =====================  DCF  ===================== */
+function dcf(w,tg,xm){
+  const n=Math.max(2,Math.min(10,Math.round(N("dc_n")))),t=CAP().t,c=COMP(),g1=N("dc_g1")/100,gn=N("dc_gn")/100,m1=N("dc_m1")/100,mn=N("dc_mn")/100,da=N("dc_da")/100,cx=N("dc_cx")/100,nwc=N("dc_nwc")/100,ex=$("dc_tm").value==="exit";
+  const rows=[];let prev=c.sal,pvSum=0;
+  for(let i=1;i<=n;i++){
+    const f=(i-1)/(n-1),g=g1+(gn-g1)*f,m=m1+(mn-m1)*f,sales=prev*(1+g),ebitda=sales*m,d=sales*da,ebit=ebitda-d,nopat=ebit>0?ebit*(1-t):ebit,capex=sales*cx,dnwc=(sales-prev)*nwc,fcff=nopat+d-capex-dnwc,df=1/Math.pow(1+w,i),pv=fcff*df;
+    rows.push({i,g,m,sales,ebitda,d,ebit,nopat,capex,dnwc,fcff,df,pv});pvSum+=pv;prev=sales;
+  }
+  const last=rows[n-1];let tv;
+  if(ex)tv=last.ebitda*xm;else{if(!(w>tg))return null;tv=last.fcff*(1+tg)/(w-tg)}
+  const pvtv=tv*last.df,ev=pvSum+pvtv,eq=ev-c.nd,ps=eq/c.sh;
+  return{rows,pvSum,tv,pvtv,ev,eq,ps,n,ex,impMult:last.ebitda?tv/last.ebitda:null,impG:(tv+last.fcff)?(tv*w-last.fcff)/(tv+last.fcff):null};
+}
+function renderDCF(){
+  const c=COMP(),w=N("dcfw")/100,ex=$("dc_tm").value==="exit",tg=N("dc_gt")/100,xm=N("dc_xm"),res=dcf(w,tg,xm);
+  const ws=[-.02,-.01,0,.01,.02];
+  if(!res){$("dcv").innerHTML=verdict(null,c.px,"");$("dck").innerHTML=$("dct").innerHTML=$("dcb").innerHTML=$("dcc").innerHTML=$("dcd").innerHTML="";R.dcf=null;R.dcfR=null;return}
+  R.dcf={v:res.ps};
+  $("dcv").innerHTML=verdict(res.ps,c.px,"Valor por DCF");
+  $("dck").innerHTML=[["Valor empresa (EV)",mM(res.ev)+" M","millones"],["(−) Deuda neta",mM(c.nd)+" M","millones"],["Valor del capital",mM(res.eq)+" M","millones"],["Valor por acción",mon(res.ps),sg(res.ps/c.px-1)+" vs precio"],["Valor terminal",pc(res.pvtv/res.ev,0),"del EV"],[ex?"g implícito en el múltiplo":"EV/EBITDA implícito",ex?pc(res.impG):xx(res.impMult),"del valor terminal"]].map(([a,v,s])=>`<div class="kpi"><span>${a}</span><b>${v}</b><small>${s}</small></div>`).join("");
+  const rw=[["Ventas","sales"],["Crecimiento","g","p"],["EBITDA","ebitda"],["Margen EBITDA","m","p"],["(−) D&A","d"],["EBIT","ebit"],["NOPAT","nopat"],["(−) CapEx","capex"],["(−) Δ Capital de trabajo","dnwc"],["FCFF","fcff","b"],["Factor de descuento","df","f"],["Valor presente","pv","b"]];
+  let h=`<table><tr><th></th><th>Base</th>`+res.rows.map(r=>`<th>Año ${r.i}</th>`).join("")+"</tr>";
+  rw.forEach(([n,k,t])=>{h+=`<tr${t==="b"?' style="font-weight:700"':""}><td>${n}</td><td>${k==="sales"?mM(c.sal):k==="ebitda"?mM(c.ebd):""}</td>`+res.rows.map(r=>`<td>${t==="p"?pc(r[k],1):t==="f"?r[k].toFixed(3):mM(r[k])}</td>`).join("")+"</tr>"});
+  $("dct").innerHTML=h+"</table>";
+  const tot=res.ev||1;
+  $("dcb").innerHTML=`<div class="cbl"><span>Valor presente de los flujos explícitos</span><b>${mM(res.pvSum)} M · ${pc(res.pvSum/tot,0)}</b></div><div class="cbb"><i style="width:${Math.max(0,res.pvSum/tot*100)}%;background:#8b7cff"></i></div><div class="cbl"><span>Valor presente del valor terminal</span><b>${mM(res.pvtv)} M · ${pc(res.pvtv/tot,0)}</b></div><div class="cbb"><i style="width:${Math.max(0,res.pvtv/tot*100)}%;background:#ffb020"></i></div>`;
+  {const W=640,H=220,mg={l:56,r:12,t:12,b:26},mx=Math.max(...res.rows.map(r=>Math.max(r.fcff,0)),1)*1.15,mn=Math.min(0,...res.rows.map(r=>r.fcff)),a=axis(W,H,mg,mn,mx,v=>Math.round(v)),bw=(W-mg.l-mg.r)/res.rows.length;let o=a.g;
+   res.rows.forEach((r,i)=>{const x=mg.l+i*bw+bw*.16,wd=bw*.68,y0=a.sy(0),y1=a.sy(r.fcff),y2=a.sy(r.pv);o+=`<rect x="${x}" y="${Math.min(y0,y1)}" width="${wd}" height="${Math.abs(y1-y0)}" rx="3" fill="#3a3a46"><title>FCFF ${mM(r.fcff)}</title></rect><rect x="${x+wd*.18}" y="${Math.min(y0,y2)}" width="${wd*.64}" height="${Math.abs(y2-y0)}" rx="3" fill="#8b7cff"><title>VP ${mM(r.pv)}</title></rect><text x="${x+wd/2}" y="${H-8}" text-anchor="middle">Año ${r.i}</text>`});
+   $("dcc").innerHTML=`<div class="leg"><span><i style="background:#3a3a46"></i>FCFF</span><span><i style="background:#8b7cff"></i>Valor presente</span></div>`+svgw(W,H,o)}
+  // data table
+  const rowsD=ex?[-2,-1,0,1,2].map(d=>({lab:xx(xm+d),tg:tg,xm:xm+d})):[-.01,-.005,0,.005,.01].map(d=>({lab:pc(tg+d),tg:tg+d,xm:xm}));
+  let t2=`<table><tr><th>${ex?"Múltiplo":"g"} \\ WACC</th>`+ws.map(d=>`<th>${pc(w+d)}</th>`).join("")+"</tr>";
+  rowsD.forEach((r,ri)=>{t2+=`<tr><th>${r.lab}</th>`;ws.forEach((d,ci)=>{const q=dcf(w+d,r.tg,r.xm),base=ri===2&&ci===2;t2+=q?`<td style="background:${q.ps>=c.px?"var(--okbg)":"var(--nobg)"};color:${q.ps>=c.px?"var(--ok)":"var(--no)"};${base?"font-weight:700;outline:2px solid var(--ac)":""}">${q.ps.toFixed(2)}</td>`:`<td style="color:var(--mut)">—</td>`});t2+="</tr>"});
+  $("dcd").innerHTML=t2+"</table>";$("dcs").textContent=`Valor por acción según el WACC (columnas) y ${ex?"el múltiplo de salida":"el crecimiento terminal"} (filas). Verde: supera el precio de ${mon(c.px)}.`;
+  const lo=dcf(w+.01,ex?tg:tg-.005,ex?xm-1:xm),hi=dcf(w-.01,ex?tg:tg+.005,ex?xm+1:xm);
+  R.dcfR=lo&&hi?{lo:lo.ps,mid:res.ps,hi:hi.ps}:{lo:res.ps,mid:res.ps,hi:res.ps};
+}
+
+/* =====================  COMPARAR  ===================== */
+function renderComp(){
+  const c=COMP(),M=[];
+  if(R.ddmR)M.push({g:"ddm",n:"DDM",c:"#8b7cff",...R.ddmR});
+  if(R.dcfR)M.push({g:"dcf",n:"DCF",c:"#38bdf8",...R.dcfR});
+  if(R.mult)R.mult.items.forEach(i=>M.push({g:"mul",n:i.n,c:"#ffb020",lo:i.lo,mid:i.mid,hi:i.hi}));
+  if(R.reg)M.push({g:"reg",n:"Regresión "+R.reg.n,c:"#2dd4bf",lo:R.reg.lo,mid:R.reg.mid,hi:R.reg.hi});
+  if(!M.length){$("cmv").innerHTML=verdict(null,c.px,"");$("cmf").innerHTML=$("cmt").innerHTML="";return}
+  const W={ddm:N("w_ddm"),dcf:N("w_dcf"),mul:N("w_mul")},have={ddm:!!R.ddmR,dcf:!!R.dcfR,mul:!!R.mult};
+  let ws=0,mid=0,lo=0,hi=0;
+  [["ddm",R.ddmR],["dcf",R.dcfR],["mul",R.mult]].forEach(([k,r])=>{if(r&&W[k]>0){ws+=W[k];mid+=W[k]*r.mid;lo+=W[k]*r.lo;hi+=W[k]*r.hi}});
+  const ok=ws>0;if(ok){mid/=ws;lo/=ws;hi/=ws}
+  $("cmv").innerHTML=ok?verdict(mid,c.px,"Valor combinado")+`<div class="kpis"><div class="kpi"><span>Valor combinado</span><b>${mon(mid)}</b><small>promedio ponderado</small></div><div class="kpi"><span>Rango</span><b>${mon(lo)} – ${mon(hi)}</b><small>bajo – alto</small></div><div class="kpi"><span>Precio de mercado</span><b>${mon(c.px)}</b><small>${c.px>=lo&&c.px<=hi?"dentro del rango":c.px<lo?"debajo del rango":"arriba del rango"}</small></div></div>`:verdict(null,c.px,"");
+  // football field
+  const all=[...M.flatMap(m=>[m.lo,m.mid,m.hi]),c.px,ok?lo:c.px,ok?hi:c.px].filter(isNum),xlo=Math.max(0,Math.min(...all)*.9),xhi=Math.max(...all)*1.08;
+  const rowsF=[...M];if(ok)rowsF.push({n:"Valor combinado",c:"#00e08a",lo,mid,hi,bold:1});
+  const Wd=640,rh=30,Hd=rowsF.length*rh+44,mg={l:132,r:16,t:12,b:28},sx=v=>mg.l+(v-xlo)/(xhi-xlo||1)*(Wd-mg.l-mg.r);let o="";
+  const step=nice((xhi-xlo)/5);for(let v=Math.ceil(xlo/step)*step;v<=xhi;v+=step)o+=`<line x1="${sx(v)}" x2="${sx(v)}" y1="${mg.t}" y2="${Hd-mg.b}" stroke="var(--bd)"/><text x="${sx(v)}" y="${Hd-12}" text-anchor="middle">$${Math.round(v)}</text>`;
+  rowsF.forEach((m,i)=>{const y=mg.t+i*rh+6;o+=`<text x="${mg.l-8}" y="${y+10}" text-anchor="end" style="fill:${m.bold?"#fff":"var(--mut)"};${m.bold?"font-weight:700":""}">${esc(m.n)}</text><rect x="${sx(m.lo)}" y="${y}" width="${Math.max(3,sx(m.hi)-sx(m.lo))}" height="14" rx="4" fill="${m.c}" fill-opacity=".85"><title>${m.n}: ${mon(m.lo)} – ${mon(m.hi)}</title></rect><line x1="${sx(m.mid)}" x2="${sx(m.mid)}" y1="${y-2}" y2="${y+16}" stroke="#000" stroke-width="2"/>`});
+  o+=`<line x1="${sx(c.px)}" x2="${sx(c.px)}" y1="${mg.t-4}" y2="${Hd-mg.b}" stroke="#fff" stroke-width="1.6" stroke-dasharray="4 3"/><text x="${sx(c.px)}" y="${mg.t-5}" text-anchor="middle" style="fill:#fff;font-weight:700">Precio ${mon(c.px)}</text>`;
+  $("cmf").innerHTML=svgw(Wd,Hd+8,o,460);
+  $("cmt").innerHTML=`<table><tr><th>Método</th><th>Bajo</th><th>Central</th><th>Alto</th><th>Central vs precio</th></tr>`+rowsF.map(m=>`<tr${m.bold?' style="font-weight:700"':""}><td>${esc(m.n)}</td><td>${mon(m.lo)}</td><td>${mon(m.mid)}</td><td>${mon(m.hi)}</td><td class="${m.mid>=c.px?"up":"dn"}">${sg(m.mid/c.px-1)}</td></tr>`).join("")+"</table>";
+}
+
+/* =====================  ciclo principal  ===================== */
+function update(){
+  const k=CAP();
+  if(AUTO.ddmr)$("ddmr").value=(k.ke*100).toFixed(2);
+  if(AUTO.dcfw)$("dcfw").value=(k.wacc*100).toFixed(2);
+  nav();renderBond();renderDatos();renderDDM();renderMult();renderDCF();renderComp();persist();
+}
+document.querySelectorAll("main input[id],main select[id]").forEach(e=>{
+  if(e.dataset.nosave)return;
+  e.addEventListener(e.tagName==="SELECT"?"change":"input",()=>{if(e.id in AUTO)AUTO[e.id]=false;update()});
+});
+renderPeers();update();
+</script>
+</body>
+</html>
